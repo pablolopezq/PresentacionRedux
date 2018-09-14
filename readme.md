@@ -17,7 +17,7 @@ Para entender como Redux maneja nuestro state tenemos que pensar sobre el como u
 ```javascript
 {
     clases: [{
-    nombre: 'Teoria de Bases de Datos',
+    nombre: 'Teoria de Bases de Datos 2',
     aprobada: false
     },{
     nombre: 'Experiencia de Usuario',
@@ -27,19 +27,19 @@ Para entender como Redux maneja nuestro state tenemos que pensar sobre el como u
 }
 ```
 
-Este objeto es como un modelo o una clase, solo que sin los setters. Es asi para que diferentes partes del codigo puedan manipular directamente el state, causando bugs dificiles de solucionar.
+Este objeto es como un modelo o una clase, solo que sin los setters. Es asi para que diferentes partes del codigo no puedan manipular directamente el state, causando bugs dificiles de solucionar.
 
 Para que algo cambie en el state tenemos que despachar una accion. Una accion es un objeto simple de JavaScript que describe lo que cambia en el state. Algunos ejemplos de acciones: 
 
 ```javascript
-{type: 'ADD_CLASE', text: 'Teoria de la Computacion'}
+{type: 'ADD_CLASE', nombre: 'Teoria de la Computacion'}
 {type: 'TOGGLE_APB', index: 1}
 {type: 'TOGGLE_VISIBILIDAD', filter: 'MOSTRAR_TODAS'}
 ```
 
-Forzando que cada cambio sea una accion nos permite tener un claro entendimiento de que esta pasando con el state de la app. Si algo cambio, sabemos porque cambio. Las acciones son como migajas de pan de todo lo que ha cambiado.
+El hecho de que cada cambio sea una accion nos permite tener un claro entendimiento de que esta pasando con el state de la app. Si algo cambio, sabemos porque cambio. Las acciones son como migajas de pan de todo lo que ha cambiado.
 
-Finalmente, escribimos una funcion **reducer** para conectar las acciones con el state. Esta funcion recibe un state y una accion como parametros, y devuelve el nuevo state de la aplicacion. Para aplicaciones complejas seria muy dificil escribir una reducer function, asi que la dividimos en funciones mas pequenas.
+Finalmente, escribimos una funcion **reducer** para conectar las acciones con el state. Esta funcion recibe un state y una accion como parametros, y devuelve el nuevo state de la aplicacion. Para aplicaciones complejas seria muy dificil escribir una sola reducer function, asi que la dividimos en funciones mas pequenas.
 
 ```javascript
 function visibilidad(state = 'MOSTRAR_APROBADAS', accion) {
@@ -53,12 +53,12 @@ function visibilidad(state = 'MOSTRAR_APROBADAS', accion) {
 function clases(state = [], accion) {
 	switch(accion.type) {
     	case 'ADD_CLASE':
-    	    return state.concat([{clase: accion.text, aprobada: false}])
+    	    return state.concat([{clase: accion.nombre, aprobada: false}])
         case: 'TOGGLE_APB':
             return state.map(
             	(clase, index) =>
                     accion.index === index
-                        ? {nombre: accion.text, aprobada: !clase.aprobada}
+                        ? {nombre: accion.nombre, aprobada: !clase.aprobada}
                         : clase
             )
         default:
@@ -101,7 +101,23 @@ type Store = {
 
 #### El state es read-only
 
-La unica manera de cambiar el state es emitiendo una **accion**, nosotros solo escribimos **reducers**
+La unica manera de cambiar el state es emitiendo una **accion**.
+
+Esto asegura que ningun view o ningun callback del servidor cambie el state directamente. En lugar, muestran intencion de cambiar el state. Todos los cambios son centralizados y se ejecutan uno tras el otro. Ya que las acciones son simples objetos, es facil loggearlos, serializarlos, guardarlos, y reproducirlos para propositos de pruebas y debugging.
+
+```js
+store.dispatch({
+    type: 'TOGGLE_APB',
+    index: 1
+})
+
+store.dispatch({
+    type: 'TOGGLE_VISIBILIDAD',
+    filter: 'MOSTAR_TODAS'
+})
+```
+
+### Los cambios son realizados con funciones
 
 Los reducers son funciones que toman un state y una accion, y devuelven el state nuevo. Es importante recordar que tenemos que retornar un state nuevo en lugar de mutar el state recibido. Podemos empezar con un solo reducer e ir dividiendolo mientras nuestra aplicacion crece. Ya que los reducers son solo funciones, podemos controlar el orden en el cual se ejecutan, pasarles data adicional, o incluso reusar reducers para tareas como paginacion.
 
