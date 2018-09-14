@@ -16,12 +16,12 @@ Para entender como Redux maneja nuestro state tenemos que pensar sobre el como u
 
 ```javascript
 {
-	clases: [{
-    	nombre: 'Teoria de Bases de Datos',
-        aprobada: false
+    clases: [{
+    nombre: 'Teoria de Bases de Datos',
+    aprobada: false
     },{
-    	nombre: 'Experiencia de Usuario',
-        aprobada: false
+    nombre: 'Experiencia de Usuario',
+    aprobada: false
     }],
     visibilidad: 'MOSTRAR_APROBADAS'
 }
@@ -43,7 +43,7 @@ Finalmente, escribimos una funcion **reducer** para conectar las acciones con el
 
 ```javascript
 function visibilidad(state = 'MOSTRAR_APROBADAS', accion) {
-	if(accion.type === 'TOGGLE_VISIBILIDAD') {
+    if(accion.type === 'TOGGLE_VISIBILIDAD') {
     	return accion.filter
     } else {
     	return state
@@ -53,16 +53,16 @@ function visibilidad(state = 'MOSTRAR_APROBADAS', accion) {
 function clases(state = [], accion) {
 	switch(accion.type) {
     	case 'ADD_CLASE':
-    		return state.concat([{clase: accion.text, aprobada: false}])
+    	    return state.concat([{clase: accion.text, aprobada: false}])
         case: 'TOGGLE_APB':
-        	return state.map(
+            return state.map(
             	(clase, index) =>
-                	accion.index === index
-                    	? {nombre: accion.text, aprobada: !clase.aprobada}
+                    accion.index === index
+                        ? {nombre: accion.text, aprobada: !clase.aprobada}
                         : clase
             )
         default:
-         	return state
+         return state
     }
 }
 ```
@@ -71,8 +71,8 @@ Despues escribimos otra funcion que maneja el state completo de nuestra app al l
 
 ```javascript
 function appClases(state = {}, accion) {
-	return {
-    	clases: clases(state.clases, accion),
+    return {
+        clases: clases(state.clases, accion),
         visibilidad: visibilidad(state.visibilidad, accion)
     }
 }
@@ -92,7 +92,7 @@ Un store esta estructurado asi:
 
 ```javascript
 type Store = {
-	dispatch: Dispatch //Es la funcion principal que recibe acciones
+    dispatch: Dispatch //Es la funcion principal que recibe acciones
     getState () => State //Retorna el state actual
     subscribe: (listener: () => void) => () => void //Registra una funcion para ejecutarse cada vez que se cambie el state
     replaceReducer: (reducer: Reducer) => void //Usada para hot reloading y code splitting. Poco usada
@@ -107,8 +107,8 @@ Los reducers son funciones que toman un state y una accion, y devuelven el state
 
 ```javascript
 function visibilidad(state = 'MOSTRAR_APROBADAS', accion) {
-	if(accion.type === 'TOGGLE_VISIBILIDAD') {
-    	return accion.filter
+    if(accion.type === 'TOGGLE_VISIBILIDAD') {
+        return accion.filter
     } else {
     	return state
     }
@@ -117,11 +117,11 @@ function visibilidad(state = 'MOSTRAR_APROBADAS', accion) {
 function clases(state = [], accion) {
 	switch(accion.type) {
     	case 'ADD_CLASE':
-    		return state.concat([{clase: accion.text, aprobada: false}])
+    	    return state.concat([{clase: accion.text, aprobada: false}])
         case: 'TOGGLE_APB':
-        	return state.map(
+            return state.map(
             	(clase, index) =>
-                	accion.index === index
+                    accion.index === index
                     	? {nombre: accion.text, aprobada: !clase.aprobada}
                         : clase
             )
